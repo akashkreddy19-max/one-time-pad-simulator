@@ -1,0 +1,60 @@
+import os
+
+def generate_key(length):
+    """
+    Generates a random key of the same length as the plaintext.
+    """
+    return os.urandom(length)
+
+def otp_encrypt(plaintext, key):
+    """
+    Encrypts plaintext using One-Time Pad (XOR).
+    """
+    plaintext_bytes = plaintext.encode()
+    if len(plaintext_bytes) != len(key):
+        raise ValueError("Key length must match plaintext length")
+    ciphertext = bytes([p ^ k for p, k in zip(plaintext_bytes, key)])
+    return ciphertext
+
+def otp_decrypt(ciphertext, key):
+    """
+    Decrypts ciphertext using One-Time Pad (XOR).
+    """
+    decrypted_bytes = bytes([c ^ k for c, k in zip(ciphertext, key)])
+    return decrypted_bytes.decode()
+
+def run_simulator():
+    """
+    Runs the OTP simulator repeatedly until the user chooses to stop.
+    """
+    print("=== ONE-TIME PAD ENCRYPTION SIMULATOR ===\n")
+
+    while True:
+        plaintext = input("Enter plaintext message: ")
+
+        # Generate random key
+        key = generate_key(len(plaintext))
+
+        # Encrypt
+        ciphertext = otp_encrypt(plaintext, key)
+
+        # Display results
+        print("\n--- Encryption Result ---")
+        print(f"Plaintext:  {plaintext}")
+        print(f"Key (hex):  {key.hex()}")
+        print(f"Ciphertext (hex): {ciphertext.hex()}")
+
+        # Decrypt to verify
+        decrypted = otp_decrypt(ciphertext, key)
+        print(f"Decrypted message: {decrypted}")
+        print("--------------------------\n")
+
+        # Ask user if they want to continue
+        again = input("Do you want to run the simulator again? (yes/no): ").strip().lower()
+        if again not in ["yes", "y"]:
+            print("\nSimulator ended. Goodbye!")
+            break
+        print("\n")  # Space before next run
+
+if __name__ == "__main__":
+    run_simulator()
